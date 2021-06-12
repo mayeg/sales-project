@@ -208,6 +208,19 @@ class BillView(APIView):
             connection_cursor.execute(query)
             for row in connection_cursor.fetchall():
                 bill = self.__serialize_bill(row)
+                sql = f"""select sp.*
+                 from sales_product sp 
+                 left join sales_billproduct sbp on sp.id = sbp.product_id_id
+                 where sbp.bill_id_id = {bill['id']}"""
+                connection_cursor.execute(sql)
+                products_bill = connection_cursor.fetchall()
+                products = []
+                for product in products_bill:
+                    products.append({
+                        "name": product[0],
+                        "description": product[1]
+                    })
+                bill['products'] = products
                 bills_response.append(bill)
         return Response(bills_response)
 
@@ -279,7 +292,8 @@ class BillView(APIView):
                 "first_name": row[6],
                 "last_name": row[7],
                 "email": row[8]
-            }
+            },
+            "products": []
         }
 
 
