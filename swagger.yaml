@@ -1,426 +1,405 @@
-swagger: "2.0"
+openapi: 3.0.1
 info:
-  description: "Aplicacion para la prueba de desarrollo de Quick. Sistema de ventas"
-  version: "1.0.0"
-  title: "Sales API"
-host: "127.0.0.1:8000"
-basePath: "/"
-schemes:
-- "http"
+  title: Sales API
+  description: Aplicacion para la prueba de desarrollo de Quick. Sistema de ventas
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+- url: http://127.0.0.1:8000/
 paths:
   /api/users/login/:
-    get:
+    post:
       tags:
-      - "Auth"
-      summary: "Logueo del usuario, genera token JWT"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Status values that need to be considered for filter"
+      - Auth
+      summary: Logueo del usuario, genera token JWT
+      requestBody:
+        description: Status values that need to be considered for filter
+        content:
+          '*/*':
+            schema:
+              $ref: '#/components/schemas/User'
         required: true
-        schema:
-          $ref: "#/definitions/User"
       responses:
-        "200":
-          description: "Token definido"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/User"
+        200:
+          description: Token definido
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+      x-codegen-request-body-name: body
   /api/users/:
     post:
       tags:
-      - "Users"
-      summary: "Crear usuario"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Data con informacion del usuario"
+      - Users
+      summary: Crear usuario
+      requestBody:
+        description: Data con informacion del usuario
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
         required: true
-        schema:
-          $ref: "#/definitions/User"
       responses:
-        "200":
-          description: "Usuario creado correctamente"
-
+        200:
+          description: Usuario creado correctamente
+          content: {}
+      x-codegen-request-body-name: body
   /api/sales/clients:
     get:
       tags:
-      - "Clients"
-      summary: "Lista de clientes creados"
-      produces:
-      - "application/json"
+      - Clients
+      summary: Lista de clientes creados
       responses:
-        "200":
-          description: "Lista"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Client"
+        200:
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Client'
       security:
       - sales_auth:
-        - "admin"
+        - admin
     post:
       tags:
-      - "Clients"
-      summary: "Crear clientes"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Data con informacion del cliente"
+      - Clients
+      summary: Crear clientes
+      requestBody:
+        description: Data con informacion del cliente
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
         required: true
-        schema:
-          $ref: "#/definitions/Client"
       responses:
-        "200":
-          description: "Cliente creado correctamente"
-        "404":
-          description: "Ya existe un cliente con el documento"
+        200:
+          description: Cliente creado correctamente
+          content: {}
+        404:
+          description: Ya existe un cliente con el documento
+          content: {}
       security:
       - sales_auth:
-        - "admin"
-
+        - admin
+      x-codegen-request-body-name: body
   /api/sales/client/{clientId}:
     put:
       tags:
-      - "Clients"
-      summary: "Editar un cliente por Id"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
+      - Clients
+      summary: Editar un cliente por Id
       parameters:
-      - in: "path"
-        name: "clientId"
-        type: "number"
-        description: "id del cliente a modificar"
-        required: true
-      - in: "body"
-        name: "body"
-        description: "Data con informacion del cliente"
+      - name: clientId
+        in: path
+        description: id del cliente a modificar
         required: true
         schema:
-          $ref: "#/definitions/Client"
-      responses:
-        "200":
-          description: "Cliente Actualizado"
-        "404":
-          description: "No se encuentra el cliente"
-      security:
-      - sales_auth:
-        - "admin"
-    delete:
-      tags:
-      - "Clients"
-      summary: "Eliminar un cliente por Id"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "path"
-        name: "clientId"
-        type: "number"
-        description: "id cliente a eliminar"
+          type: number
+      requestBody:
+        description: Data con informacion del cliente
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Client'
         required: true
       responses:
-        "200":
-          description: "Cliente Eliminado"
-        "404":
-          description: "No se encuentra el cliente"
+        200:
+          description: Cliente Actualizado
+          content: {}
+        404:
+          description: No se encuentra el cliente
+          content: {}
       security:
       - sales_auth:
-        - "admin"
-
+        - admin
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - Clients
+      summary: Eliminar un cliente por Id
+      parameters:
+      - name: clientId
+        in: path
+        description: id cliente a eliminar
+        required: true
+        schema:
+          type: number
+      responses:
+        200:
+          description: Cliente Eliminado
+          content: {}
+        404:
+          description: No se encuentra el cliente
+          content: {}
+      security:
+      - sales_auth:
+        - admin
   /api/clients/export:
     get:
       tags:
-      - "Clients"
-      summary: "Descargar archivo csv con la data de los clientes"
-      produces:
-        - text/csv
+      - Clients
+      summary: Descargar archivo csv con la data de los clientes
       responses:
-        "200":
-          description: "Ok"
-          examples:
-            text/csv: >
-              documento,Nombre completo, cantidad de facturas
-
-              5462, surtimax sas, 5
+        200:
+          description: Ok
+          content:
+            text/csv:
+              example: |
+                documento,Nombre completo, cantidad de facturas
+                5462, surtimax sas, 5
       security:
       - sales_auth:
-        - "admin"
+        - admin
   /api/clients/import:
     post:
       tags:
-      - "Clients"
-      summary: "Crear clientes por un archivo csv"
-      consumes:
-         - multipart/form-data
-      parameters:
-       - in: formData
-         name: upfile
-         type: file
-         description: The file to upload.
+      - Clients
+      summary: Crear clientes por un archivo csv
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              properties:
+                upfile:
+                  type: string
+                  description: The file to upload.
+                  format: binary
       responses:
-        "200":
-          description: "Ok"
+        200:
+          description: Ok
+          content: {}
       security:
       - sales_auth:
-        - "admin"
-
+        - admin
   /api/sales/bills:
     get:
       tags:
-        - "Bills"
-      summary: "Lista de facturas creadas"
-      produces:
-      - "application/json"
+      - Bills
+      summary: Lista de facturas creadas
       responses:
-        "200":
-          description: "Lista"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Bill"
+        200:
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Bill'
       security:
       - sales_auth:
-        - "admin"
+        - admin
     post:
       tags:
-      - "Bills"
-      summary: "Crear facturas"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Data con informacion de la factura"
+      - Bills
+      summary: Crear facturas
+      requestBody:
+        description: Data con informacion de la factura
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bill'
         required: true
-        schema:
-          $ref: "#/definitions/Bill"
       responses:
-        "200":
-          description: "Factura creada correctamente"
-
+        200:
+          description: Factura creada correctamente
+          content: {}
       security:
       - sales_auth:
-        - "admin"
-
+        - admin
+      x-codegen-request-body-name: body
   /api/sales/bills/{id}:
     put:
       tags:
-      - "Bills"
-      summary: "Editar una factura por Id"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
+      - Bills
+      summary: Editar una factura por Id
       parameters:
-      - in: "path"
-        name: "id"
-        type: "number"
-        description: "id de la factura a modificar"
-        required: true
-      - in: "body"
-        name: "body"
-        description: "Data con informacion de la factura"
+      - name: id
+        in: path
+        description: id de la factura a modificar
         required: true
         schema:
-          $ref: "#/definitions/Bill"
-      responses:
-        "200":
-          description: "Factura Actualizada"
-        "404":
-          description: "No se encuentra la factura"
-      security:
-      - sales_auth:
-        - "admin"
-    delete:
-      tags:
-      - "Bills"
-      summary: "Eliminar una factura por Id"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "path"
-        name: "id"
-        type: "number"
-        description: "id de la factura a eliminar"
+          type: number
+      requestBody:
+        description: Data con informacion de la factura
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Bill'
         required: true
       responses:
-        "200":
-          description: "Factura Eliminada"
-        "404":
-          description: "No se encuentra la factura"
+        200:
+          description: Factura Actualizada
+          content: {}
+        404:
+          description: No se encuentra la factura
+          content: {}
       security:
       - sales_auth:
-        - "admin"
-
+        - admin
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - Bills
+      summary: Eliminar una factura por Id
+      parameters:
+      - name: id
+        in: path
+        description: id de la factura a eliminar
+        required: true
+        schema:
+          type: number
+      responses:
+        200:
+          description: Factura Eliminada
+          content: {}
+        404:
+          description: No se encuentra la factura
+          content: {}
+      security:
+      - sales_auth:
+        - admin
   /api/sales/products:
     get:
       tags:
-        - "Products"
-      summary: "Lista de productos creados"
-      produces:
-      - "application/json"
+      - Products
+      summary: Lista de productos creados
       responses:
-        "200":
-          description: "Lista"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Product"
+        200:
+          description: Lista
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
       security:
       - sales_auth:
-        - "admin"
+        - admin
     post:
       tags:
-      - "Products"
-      summary: "Crear producto"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "Data con informacion del producto"
+      - Products
+      summary: Crear producto
+      requestBody:
+        description: Data con informacion del producto
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
         required: true
-        schema:
-          $ref: "#/definitions/Product"
       responses:
-        "200":
-          description: "Producto creado correctamente"
-
+        200:
+          description: Producto creado correctamente
+          content: {}
       security:
       - sales_auth:
-        - "admin"
-
+        - admin
+      x-codegen-request-body-name: body
   /api/sales/products/{id}:
     put:
       tags:
-      - "Products"
-      summary: "Editar un producto por Id"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
+      - Products
+      summary: Editar un producto por Id
       parameters:
-      - in: "path"
-        name: "id"
-        type: "number"
-        description: "id del producto a modificar"
-        required: true
-      - in: "body"
-        name: "body"
-        description: "Data con informacion del producto"
+      - name: id
+        in: path
+        description: id del producto a modificar
         required: true
         schema:
-          $ref: "#/definitions/Product"
-      responses:
-        "200":
-          description: "Producto Actualizado"
-        "404":
-          description: "No se encuentra el producto"
-      security:
-      - sales_auth:
-        - "admin"
-    delete:
-      tags:
-      - "Products"
-      summary: "Eliminar un producto por Id"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "path"
-        name: "id"
-        type: "number"
-        description: "id del producto a eliminar"
+          type: number
+      requestBody:
+        description: Data con informacion del producto
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Product'
         required: true
       responses:
-        "200":
-          description: "Producto Eliminado"
-        "404":
-          description: "No se encuentra el producto"
+        200:
+          description: Producto Actualizado
+          content: {}
+        404:
+          description: No se encuentra el producto
+          content: {}
       security:
       - sales_auth:
-        - "admin"
-
-
-securityDefinitions:
-  sales_auth:
-    type: "oauth2"
-    tokenUrl: "http://localhost:8000/api/users/login/"
-    flow: "password"
-    scopes:
-      admin: grants
-definitions:
-  User:
-    type: "object"
-    properties:
-      username:
-        type: "string"
-      password:
-        type: "string"
-  Client:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-      document:
-        type: "string"
-      first_name:
-        type: "string"
-      last_name:
-        type: "string"
-      email:
-        type: "string"
-        format: "email"
-  Bill:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-      company_name:
-        type: "string"
-      nit:
-        type: "string"
-      code:
-        type: "string"
-      client_id:
-        type: "integer"
-      products:
-        type: "array"
-        items:
+        - admin
+      x-codegen-request-body-name: body
+    delete:
+      tags:
+      - Products
+      summary: Eliminar un producto por Id
+      parameters:
+      - name: id
+        in: path
+        description: id del producto a eliminar
+        required: true
+        schema:
+          type: number
+      responses:
+        200:
+          description: Producto Eliminado
+          content: {}
+        404:
+          description: No se encuentra el producto
+          content: {}
+      security:
+      - sales_auth:
+        - admin
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    Client:
+      type: object
+      properties:
+        id:
           type: integer
-  Product:
-    type: "object"
-    properties:
-      id:
-        type: "integer"
-      name:
-        type: "string"
-      description:
-        type: "string"
-
-
-externalDocs:
-  description: "Find out more about Swagger"
-  url: "http://swagger.io"
+        document:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+    Bill:
+      type: object
+      properties:
+        id:
+          type: integer
+        company_name:
+          type: string
+        nit:
+          type: string
+        code:
+          type: string
+        client_id:
+          type: integer
+        products:
+          type: array
+          items:
+            type: integer
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+  securitySchemes:
+    sales_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

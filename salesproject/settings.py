@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'sales',
     'user',
-    'corsheaders'
+    'corsheaders',
+    'swagger'
 ]
 
 REST_FRAMEWORK = {
@@ -139,3 +140,4 @@ STATIC_URL = '/static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ORIGIN_ALLOW_ALL = True
+SWAGGER_YAML_FILE = 'swagger.yaml'

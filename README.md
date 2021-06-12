@@ -31,8 +31,33 @@ DATABASES = {
     
     `python manage.py runserver`
     
-    La aplicacion correrá en http://127.0.0.1:8000/
+    La aplicación correrá en http://127.0.0.1:8000/
 
+
+## Documentacion y pruebas API
+
+- La documentacion de todos los endpoints se puede encontrar
+la siguente url: http://127.0.0.1:8000/api-doc/#/
+  
+### Pasos para la autenticacion y pruebas de la API
+  
+   1. Crear usuario utilizando el endpoint: `POST /api/users`
+   
+   ![crear_usuario](/img/create_user.png)
+
+   2. Obtener el access token de un usuario utilizando el endpoint `POST /api/users/login/`
+      
+   ![login_user](/img/login_user.png)
+
+   3. Autorizar los request agregando el access token
+   
+   ![acces_toke](/img/acces_token.png)
+   
+   ![authorizer](/img/authorizer.png)
+   
+   4. Probar los endpoints
+
+   ![client_list](/img/client_list.png)
 
     
     
